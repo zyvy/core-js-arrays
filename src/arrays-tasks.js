@@ -38,7 +38,14 @@ function getIntervalArray(start, end) {
  *    sumArrays([-1, 0, 1], [1, 2, 3, 4]) => [0, 2, 4, 4]
  */
 function sumArrays(arr1, arr2) {
-  return arr1.map((value, index) => value + arr2[index]);
+  if (arr1.length > arr2.length) {
+    return arr1.map((value, index) =>
+      arr2[index] ? value + arr2[index] : value
+    );
+  }
+  return arr2.map((value, index) =>
+    arr1[index] ? value + arr1[index] : value
+  );
 }
 // console.log(sumArrays([-1, 0, 1], [1, 2, 3, 4]))
 
@@ -143,8 +150,10 @@ function getAverage(arr) {
  *    isSameLength(['cat', 'dog', 'elephant']) => false
  */
 function isSameLength(arr) {
-  return arr.every((value, index) => value.length === arr[index - 1].length);
+  const firstLength = arr[0].length;
+  return arr.every((value) => value.length === firstLength);
 }
+// console.log(isSameLength(['orange', 'banana', 'cherry']));
 
 /**
  * Checks if there are elements in the array where the value is equal to its index.
@@ -299,7 +308,7 @@ function flattenArray(nestedArray) {
  *   selectMany(['one','two','three'], (x) => x.split('')) =>   ['o','n','e','t','w','o','t','h','r','e','e']
  */
 function selectMany(arr, childrenSelector) {
-  return arr.map(childrenSelector);
+  return arr.flatMap(childrenSelector);
 }
 
 /**
@@ -315,9 +324,10 @@ function selectMany(arr, childrenSelector) {
  *   calculateBalance([ [ 10, 8 ], [ 1, 5 ] ])  => (10 - 8) + (1 - 5) = 2 + -4 = -2
  *   calculateBalance([]) => 0
  */
-function calculateBalance(/* arr */) {
-  throw new Error('Not implemented');
+function calculateBalance(arr) {
+  return arr.reduce((sum, value) => sum + value[0] - value[1], 0);
 }
+// console.log(calculateBalance([ [ 10, 8 ], [ 5, 1 ] ]))
 
 /**
  * Breaks an array into chunks of the specified size.
@@ -401,10 +411,13 @@ function getFalsyValuesCount(arr) {
  *                              [0,0,0,1,0],
  *                              [0,0,0,0,1]]
  */
-function getIdentityMatrix(/* n */) {
-  throw new Error('Not implemented');
+function getIdentityMatrix(n) {
+  const arr = Array.from({ length: n }, (ar, i) =>
+    Array.from({ length: n }, (val, j) => (i === j ? 1 : 0))
+  );
+  return arr;
 }
-
+// console.log(getIdentityMatrix(4));
 /**
  * Returns an array containing indices of odd elements in the input array.
  *
@@ -417,13 +430,12 @@ function getIdentityMatrix(/* n */) {
  *    getIndicesOfOddNumbers([11, 22, 33, 44, 55]) => [0, 2, 4]
  */
 function getIndicesOfOddNumbers(numbers) {
-  return numbers.filter((value, index) => {
-    if (value % 2 !== 0) {
-      return index;
-    }
-    return false;
-  });
+  function isOdd(value) {
+    return value % 2;
+  }
+  return numbers.filter((value, index) => (isOdd(value) ? index : false));
 }
+// console.log(getIndicesOfOddNumbers([1, 2, 3, 4, 5]));
 
 /**
  * Returns the array of RGB Hex strings from the specified array of numbers.
@@ -472,8 +484,11 @@ function getMaxItems(arr, n) {
  *    findCommonElements(['a', 'b', 'c'], ['b', 'c', 'd']) => [ 'b', 'c' ]
  *    findCommonElements([1, 2, 3], ['a', 'b', 'c']) => []
  */
-function findCommonElements(/* arr1, arr2 */) {
-  throw new Error('Not implemented');
+function findCommonElements(arr1, arr2) {
+  if (arr1.length > arr2.length) {
+    return arr1.filter((value) => arr2.includes(value));
+  }
+  return arr2.filter((value) => arr1.includes(value));
 }
 
 /**
