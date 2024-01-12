@@ -388,8 +388,13 @@ function generateOdds(len) {
  *   getElementByIndices([[[ 1, 2, 3]]], [ 0, 0, 1 ]) => 2        (arr[0][0][1])
  */
 function getElementByIndices(arr, indices) {
-  return arr[indices[0]][indices[1]];
+  if (indices.length < 2) {
+    return arr[indices[0]];
+  }
+  return getElementByIndices(arr[indices.shift()], indices);
 }
+
+// console.log(getElementByIndices([[[ 1, 2, 3]]], [ 0, 0, 1 ]))
 
 /**
  * Returns the number of all falsy values in the specified array.
@@ -613,15 +618,10 @@ function sortDigitNamesByNumericOrder(arr) {
     nine: 9,
     ten: 10,
   };
-  const newArr = Array(11).fill(Array(0));
-  function reducer(acc, current) {
-    // console.log(`current is ${current}, help is ${helpObject[current]}`);
-    newArr[helpObject[current]].push(current);
-  }
-  arr.reduce(reducer);
+  const newArr = arr.sort((x, y) => helpObject[x] - helpObject[y]);
   return newArr;
 }
-// console.log(sortDigitNamesByNumericOrder(['nine', 'one', ['three']]));
+// console.log(sortDigitNamesByNumericOrder([ 'nine','eight','nine','eight' ]));
 /**
  * Swaps the head and tail of the specified array:
  * the head (first half) of array move to the end, the tail (last half) move to the start.
