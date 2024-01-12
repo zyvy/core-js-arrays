@@ -275,9 +275,16 @@ function distinct(arr) {
  *    createNDimensionalArray(4, 2) => [[[[0, 0], [0, 0]], [[0, 0], [0, 0]]], [[[0, 0], [0, 0]], [[0, 0], [0, 0]]]]
  *    createNDimensionalArray(1, 1) => [0]
  */
-function createNDimensionalArray(/* n, size */) {
-  throw new Error('Not implemented');
+function createNDimensionalArray(n, size) {
+  if (n === 1) {
+    return new Array(size).fill(0);
+  }
+  const arr = new Array(size).fill(0);
+  return n + 1 === n
+    ? arr
+    : arr.map(() => createNDimensionalArray(n - 1, size));
 }
+// console.log(createNDimensionalArray(2, 3));
 
 /**
  * Flattens a nested array into a single-level array.
@@ -341,9 +348,16 @@ function calculateBalance(arr) {
  *    createChunks(['a', 'b', 'c', 'd', 'e'], 2) => [['a', 'b'], ['c', 'd'], ['e']]
  *    createChunks([10, 20, 30, 40, 50], 1) => [[10], [20], [30], [40], [50]]
  */
-function createChunks(/* arr, chunkSize */) {
-  throw new Error('Not implemented');
+function createChunks(arr, chunkSize) {
+  const final = [];
+  const newArr = arr.reduce((all, current, index) => {
+    const chunkIndex = Math.floor(index / chunkSize);
+    final[chunkIndex] = [].concat(all[chunkIndex] || [], current);
+    return final;
+  }, []);
+  return newArr;
 }
+// console.log(createChunks([1, 2, 3, 4, 5, 6, 7], 3));
 
 /**
  * Generates an array of odd numbers of the specified length.
@@ -430,10 +444,12 @@ function getIdentityMatrix(n) {
  *    getIndicesOfOddNumbers([11, 22, 33, 44, 55]) => [0, 2, 4]
  */
 function getIndicesOfOddNumbers(numbers) {
+  const indxArr = [];
   function isOdd(value) {
     return value % 2;
   }
-  return numbers.filter((value, index) => (isOdd(value) ? index : false));
+  numbers.map((value, index) => (isOdd(value) ? indxArr.push(index) : false));
+  return indxArr;
 }
 // console.log(getIndicesOfOddNumbers([1, 2, 3, 4, 5]));
 
@@ -447,10 +463,17 @@ function getIndicesOfOddNumbers(numbers) {
  *    getHexRGBValues([ 0, 255, 16777215]) => [ '#000000', '#0000FF', '#FFFFFF' ]
  *    getHexRGBValues([]) => []
  */
-function getHexRGBValues(/* arr */) {
-  throw new Error('Not implemented');
+function getHexRGBValues(arr) {
+  const newArr = arr.map((value) => value.toString(16));
+  return newArr.map((value) =>
+    value.length < 6
+      ? `#${Array(6 - value.length)
+          .fill(0)
+          .join('')}${value}`.toUpperCase()
+      : `#${value}`.toUpperCase()
+  );
 }
-
+// console.log(getHexRGBValues([0, 255, 16777215]));
 /**
  * Returns the n largest values from the specified array
  *
@@ -502,10 +525,23 @@ function findCommonElements(arr1, arr2) {
  *    findLongestIncreasingSubsequence([3, 10, 2, 1, 20]) => 2
  *    findLongestIncreasingSubsequence([50, 3, 10, 7, 40, 80]) => 3
  */
-function findLongestIncreasingSubsequence(/* nums */) {
-  throw new Error('Not implemented');
+function findLongestIncreasingSubsequence(nums) {
+  const maxArr = [];
+  function reducer(acc, current, index) {
+    let subsLength = acc;
+    if (current < nums[index + 1]) {
+      subsLength += 1;
+      return subsLength;
+    }
+    maxArr.push(subsLength);
+    return 1;
+  }
+  nums.reduce(reducer, 1);
+  return Math.max(...maxArr);
 }
-
+/* console.log(
+  findLongestIncreasingSubsequence([10, 22, 9, 33, 21, 50, 41, 60, 80])
+); */
 /**
  * Propagates every item in sequence its position times
  * Returns an array that consists of: one first item, two second items, three third items etc.
@@ -544,7 +580,10 @@ function propagateItemsByPositionIndex(arr) {
  *    shiftArray([10, 20, 30, 40, 50], -3) => [40, 50, 10, 20, 30]
  */
 function shiftArray(arr, n) {
-  return arr.slice(n).append(arr.slice(0, n));
+  if (n > 0) {
+    return arr.slice(n + 1).concat(arr.slice(0, n + 1));
+  }
+  return arr.slice(Math.abs(n)).concat(arr.slice(0, Math.abs(n)));
 }
 
 /**
@@ -560,10 +599,29 @@ function shiftArray(arr, n) {
  *   sortDigitNamesByNumericOrder([ 'nine','eight','nine','eight' ]) => [ 'eight','eight','nine','nine']
  *   sortDigitNamesByNumericOrder([ 'one','one','one','zero' ]) => [ 'zero','one','one','one' ]
  */
-function sortDigitNamesByNumericOrder(/* arr */) {
-  throw new Error('Not implemented');
+function sortDigitNamesByNumericOrder(arr) {
+  const helpObject = {
+    zero: 0,
+    one: 1,
+    two: 2,
+    three: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+    seven: 7,
+    eight: 8,
+    nine: 9,
+    ten: 10,
+  };
+  const newArr = Array(11).fill(Array(0));
+  function reducer(acc, current) {
+    // console.log(`current is ${current}, help is ${helpObject[current]}`);
+    newArr[helpObject[current]].push(current);
+  }
+  arr.reduce(reducer);
+  return newArr;
 }
-
+// console.log(sortDigitNamesByNumericOrder(['nine', 'one', ['three']]));
 /**
  * Swaps the head and tail of the specified array:
  * the head (first half) of array move to the end, the tail (last half) move to the start.
@@ -584,12 +642,24 @@ function sortDigitNamesByNumericOrder(/* arr */) {
  *
  */
 function swapHeadAndTail(arr) {
+  const newArr = arr;
+  if (arr.length < 4) {
+    const temp = arr[0];
+    newArr[0] = arr[arr.length - 1];
+    newArr[arr.length - 1] = temp;
+    return newArr;
+  }
+  if (arr.length % 2) {
+    const middle = Math.floor(arr.length / 2);
+    return arr
+      .slice(middle + 1)
+      .concat(arr[middle])
+      .concat(arr.slice(0, middle));
+  }
   const middle = arr.length / 2;
-  return arr
-    .slice(middle + 1)
-    .append(arr[middle])
-    .append(arr.slice(0, middle));
+  return arr.slice(middle).concat(arr.slice(0, middle));
 }
+// console.log(swapHeadAndTail([1, 2, 3, 4, 5]));
 
 module.exports = {
   getIntervalArray,
